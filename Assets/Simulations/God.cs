@@ -45,26 +45,33 @@ public class God : MonoBehaviour
     public GameObject[] GobjChoque;
     bool choque = false;
 
+    public List<Resorte> resortes = new List<Resorte>();
+
     public List<Tela> Telas = new List<Tela>();
     private Tela[,] TelaGrid;
+
+
 
 
     // Start is called before the first frame update
     void Start()
     {
         GobjCaidaLibre = GameObject.FindGameObjectsWithTag("CaidaLibre");
+
         GobjParabolico = GameObject.FindGameObjectsWithTag("Parabolico");
+
         GobjChoque = GameObject.FindGameObjectsWithTag("Choque");
+
+        Resorte[] resortesEnEscena = FindObjectsOfType<Resorte>();
+        resortes.AddRange(resortesEnEscena);
+
         Tela[] TelasEnEscena = FindObjectsOfType<Tela>();
         Telas.AddRange(TelasEnEscena);
 
         Iman[] imanesEnEscena = FindObjectsOfType<Iman>();
         imanes.AddRange(imanesEnEscena);
 
-        foreach (Iman iman in imanes)
-        {
-            AsignarMaterial(iman);
-        }
+       
 
     }
 
@@ -126,12 +133,22 @@ public class God : MonoBehaviour
                     bolita2.Shoot(h, friction, gravity, bolita1);
                 }
             }
+        } 
+        foreach (Iman iman in imanes)
+        {
+            AsignarMaterial(iman);
         }
 
         foreach (Tela Tela1 in Telas)
         {
             Tela1.Simulate(h, friction, gravity);
         }
+
+        foreach (Resorte resorte in resortes)
+        {
+            resorte.Simulate(h, friction, gravity);
+        }
+
 
         void createMesh()
         {
