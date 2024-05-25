@@ -7,6 +7,8 @@ TagManager:
   - CaidaLibre
   - Parabolico
   - Choque
+  - Resorte
+  - Iman
   layers:
   - Default
   - TransparentFX

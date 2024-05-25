@@ -1,51 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
-public class Tela : MonoBehaviour
+public class Cabello : MonoBehaviour
 {
-    //Traer valores de god
-    private God godScript;
-    private float k;
-    private float restLength;
-    private Vector3 velocity;
+
+    [SerializeField] float k;
+    [SerializeField] float restLength;
 
     //Objeto para el resorte
-    [SerializeField] Tela objTela;
+    [SerializeField] Resorte objResorte;
 
-    public float mass = 1;
+    [SerializeField] float mass;
+    [SerializeField] Vector3 velocity = Vector3.zero;
 
     // Lista de resortes conectados
-    public List<Tela> TelaConectada = new List<Tela>();
+    public List<Resorte> resortesConectados = new List<Resorte>();
 
     //mover resortes
     private bool isDragging = false;
     private Vector3 offset;
 
-    void Start()
-    {
-        // Obtener una referencia al script God
-        godScript = FindObjectOfType<God>();
-
-        // Verificar si se encontró el script God
-        if (godScript == null)
-        {
-            Debug.LogError("No se encontró el script God en la escena.");
-            return;
-        }
-
-        // Obtener los valores de k, restLength y velocity desde el script God
-        k = godScript.k;
-        restLength = godScript.restLength;
-        velocity = godScript.velocity;
-    }
-
-
     public void Simulate(float h, float friction, float gravity)
     {
-        if (!objTela) return;
-
         Vector3 force = CalculateSpringForce();
 
         Vector3 acceleration = force / mass;
@@ -65,30 +42,24 @@ public class Tela : MonoBehaviour
     }
     Vector3 CalculateSpringForce()
     {
-        if (!objTela) return Vector3.zero;
-
         Vector3 totalForce = Vector3.zero;
-        Vector3 displacement;
-
-        displacement = transform.position - objTela.transform.position;
 
         //Resorte actual
-
+        Vector3 displacement = transform.position - objResorte.transform.position;
         float currentLength = displacement.magnitude;
         // Ley de Hooke (F = -k * (longitud actual - longitud natural))
         Vector3 springForce = k * (restLength - currentLength) * displacement.normalized;
         totalForce += springForce;
 
-        if (objTela != null)
+        if (objResorte != null)
         {
-            Vector3 forceFromConnectes = CalculateForceFromConnected(objTela);
+            Vector3 forceFromConnectes = CalculateForceFromConnected(objResorte);
             totalForce += forceFromConnectes;
         }
-
         return totalForce;
     }
 
-    Vector3 CalculateForceFromConnected(Tela connectedResorte)
+    Vector3 CalculateForceFromConnected(Resorte connectedResorte)
     {
         Vector3 displacement = transform.position - connectedResorte.transform.position;
         float currentLength = displacement.magnitude;
@@ -118,15 +89,21 @@ public class Tela : MonoBehaviour
             Vector3 newPosition = GetMouseWorldPosition() + offset;
             newPosition.z = transform.position.z;
 
+            // Calcula la diferencia de posición entre el resorte principal y los resortes conectados
             Vector3 positionOffset = newPosition - transform.position;
 
+            // Mueve el resorte principal
             transform.position = newPosition;
 
-            foreach (Tela TelaConectada in TelaConectada)
+            // Mueve los resortes conectados
+            foreach (Resorte connectedResorte in resortesConectados)
             {
-                Vector3 connectedNewPosition = TelaConectada.transform.position + positionOffset;
-                connectedNewPosition.z = TelaConectada.transform.position.z;
-                TelaConectada.transform.position = connectedNewPosition;
+                // Calcula la nueva posición de los resortes conectados
+                Vector3 connectedNewPosition = connectedResorte.transform.position + positionOffset;
+                connectedNewPosition.z = connectedResorte.transform.position.z;
+
+                // Asigna la nueva posición a los resortes conectados
+                connectedResorte.transform.position = connectedNewPosition;
             }
         }
     }

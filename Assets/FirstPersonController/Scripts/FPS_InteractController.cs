@@ -23,7 +23,8 @@ public class FPS_InteractController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E)) {
+        if (Input.GetKeyDown(KeyCode.I))
+        {
 
             // Bit shift the index of the layer (8) to get a bit mask
             int layerMask = 1 << 8;
@@ -38,7 +39,7 @@ public class FPS_InteractController : MonoBehaviour
             {
                 hit.transform.gameObject.GetComponent<Usable>().Use();
 
-                
+
                 Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.blue);
                 Debug.Log("Did Hit");
             }

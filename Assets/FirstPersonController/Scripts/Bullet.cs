@@ -29,11 +29,24 @@ public class Bullet : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.transform.gameObject.layer == 9) {
-            Enemy e = collision.transform.gameObject.GetComponent<Enemy>();
-            e.Damage(damage);
-        }
+        if (!collision.gameObject.CompareTag("Choque") || !collision.gameObject.CompareTag("Resorte"))
+        {
+            // Si la colisión ocurrió con un objeto que no sea la bolita, entonces causar daño
+            if (collision.transform.gameObject.layer == 9)
+            {
+                Enemy e = collision.transform.gameObject.GetComponent<Enemy>();
+                if (e != null)
+                {
+                    e.Damage(damage);
+                }
+            }
 
-        DestroyBullet();
+            // Destruir la bala
+            DestroyBullet();
+        }
+        else
+        {
+            DestroyBullet();
+        }
     }
 }
