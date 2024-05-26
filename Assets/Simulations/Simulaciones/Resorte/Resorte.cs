@@ -1,61 +1,88 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
+
 public class Resorte : MonoBehaviour
 {
-    [SerializeField] float k; // Constante del resorte
-    [SerializeField] float restLength; // Longitud natural del resorte
-    [SerializeField] float mass; // Masa de la bolita
-    [SerializeField] Vector3 velocity = Vector3.zero; // Velocidad de la bolita
-    [SerializeField] Transform anchorPoint; // Punto de anclaje (la caja sujeta al suelo)
+    [SerializeField] float k;
+    [SerializeField] float restLength;
 
-    void Update()
-    {
+    // Objeto para el resorte
+    [SerializeField] Resorte objResorte;
 
-    }
+    [SerializeField] float mass;
+    [SerializeField] Vector3 velocity = Vector3.zero;
 
-    // Método para calcular la fuerza del resorte
+    // Lista de resortes conectados
+    public List<Resorte> resortesConectados = new List<Resorte>();
+
+    private bool isSimulating = false;
+
+    // Simulación del resorte
     public void Simulate(float h, float friction, float gravity)
     {
+        if (!objResorte) return;
+
         Vector3 force = CalculateSpringForce();
 
         Vector3 acceleration = force / mass;
 
-        // Limitar la aceleración solo a los ejes X y Z
-        acceleration.x = 0f;
-        acceleration.z = 0f;
+        acceleration -= friction * velocity;
 
-        // Aplicar la gravedad solo en el eje Y
-        acceleration.y += gravity;
+        acceleration += new Vector3(0, gravity, 0);
 
-        // Aplicar la fricción solo en los ejes X y Z
-        velocity.x -= friction * velocity.x;
-        velocity.z -= friction * velocity.z;
-
-        // Aplicar la aceleración y la velocidad
         velocity += acceleration * h;
         transform.position += velocity * h;
 
-        // Limitar la velocidad solo a los ejes X y Z
-        velocity.y = 0f;
-
-        // Ajustar la posición para asegurarse de que el resorte esté por encima del punto de anclaje
-        transform.position = anchorPoint.position + Vector3.up * restLength;
+        if (transform.position.y < 0.0f)
+        {
+            transform.position = new Vector3(transform.position.x, 0.0f, transform.position.z);
+            velocity.y = 0.0f;
+        }
     }
 
     Vector3 CalculateSpringForce()
     {
+        if (!objResorte) return Vector3.zero;
+
         Vector3 totalForce = Vector3.zero;
+        Vector3 displacement;
 
-        // Calcula el vector de desplazamiento entre el objeto y el punto de anclaje
-        Vector3 displacement = transform.position - anchorPoint.position;
+        displacement = transform.position - objResorte.transform.position;
+
+        // Resorte actual
         float currentLength = displacement.magnitude;
-
-        // Calcula la fuerza del resorte según la ley de Hooke
+        // Ley de Hooke (F = -k * (longitud actual - longitud natural))
         Vector3 springForce = k * (restLength - currentLength) * displacement.normalized;
         totalForce += springForce;
 
         return totalForce;
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        // Obtener el punto de impacto y la normal de la colisión
+        ContactPoint contact = collision.contacts[0];
+        Vector3 normal = contact.normal;
+
+        // Activar la simulación al recibir una colisión
+        StartSimulation();
+
+        // Aplicar una fuerza adicional basada en la velocidad relativa de la colisión
+        ApplyImpact(normal * 3f);
+
+        // Ajustar la componente Y de la velocidad a cero para evitar movimientos en esa dirección
+        velocity.y = 0f;
+    }
+
+    void ApplyImpact(Vector3 impactForce)
+    {
+        // Aplicar la fuerza de impacto a la masa del resorte
+        velocity += impactForce / mass;
+    }
+
+
+    private void StartSimulation()
+    {
+        isSimulating = true;
     }
 }

@@ -4,33 +4,40 @@ using UnityEngine;
 
 public class GodImanes : MonoBehaviour
 {
-    private float h;
-    private float friction;
-    private float gravity;
+    private float h = 0.01f;
+    private float friccion = 0.02f;
+    private float gravedad = -9.8f;
     public float fuerzaImanes;
+
+    //METODOS
+
     public List<Iman> imanes = new List<Iman>();
 
-    public void Initialize(float h, float friction, float gravity)
+    public GameObject caja;
+
+    private bool simulacionIniciada = false;
+
+    void Start()
     {
-        this.h = h;
-        this.friction = friction;
-        this.gravity = gravity;
         Iman[] imanesEnEscena = FindObjectsOfType<Iman>();
         imanes.AddRange(imanesEnEscena);
     }
 
-    public void Simulate()
+    void Update()
     {
-        foreach (Iman iman in imanes)
-        {
-            foreach (Iman otroIman in imanes)
+            foreach (Iman iman in imanes)
             {
-                if (iman != otroIman)
+                foreach (Iman otroIman in imanes)
                 {
-                    Vector3 fuerza = iman.CalcularFuerza(otroIman.transform.position, otroIman.polaridad, h, friction, fuerzaImanes);
-                    iman.AplicarFuerza(fuerza, gravity);
+                    if (iman != otroIman)
+                    {
+                        // Calcular la fuerza entre el imán actual y otro imán
+                        Vector3 fuerza = iman.CalcularFuerza(otroIman.transform.position, otroIman.polaridad, h, friccion, fuerzaImanes);
+
+                        // Aplicar la fuerza al imán actual
+                        iman.AplicarFuerza(fuerza, gravedad);
+                    }
                 }
             }
         }
-    }
 }

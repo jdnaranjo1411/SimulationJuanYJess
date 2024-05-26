@@ -20,6 +20,7 @@ public class Bolita : MonoBehaviour
 
     void Start()
     {
+
         Pos = transform.position; // Usar la posición inicial del asset en la escena
         Vel = Vector3.zero;
         collision = false;
@@ -37,15 +38,24 @@ public class Bolita : MonoBehaviour
 
     private void Simulate(float h)
     {
-        CalculateForce(Physics.gravity.y, 0); // Puedes ajustar la fricción si es necesario
+        CalculateForce(Physics.gravity.y, 0.2f); // Puedes ajustar la fricción si es necesario
         Vector3 acceleration = Force / mass;
         Vel += h * acceleration;
         Pos += h * Vel;
 
-        DetectCollision(null); // Si necesitas detectar colisiones con otras bolitas, pásalas aquí
-        LoadPos();
+        Detect(); // Detectar colisión con el suelo u otros objetos
+        LoadPos(); // Cargar la nueva posición
     }
 
+    public void Detect()
+    {
+        collision = false;
+        if (Pos.y <= 0.05)
+        {
+            collision = true;
+            Pos.y = 0.05f;
+        }
+    }
     private void CalculateForce(float gravity, float friction)
     {
         Vector3 g;
@@ -57,8 +67,13 @@ public class Bolita : MonoBehaviour
         g.y = mass * gravity;
         g.z = 0;
 
+        // Fuerza de fricción
         Vector3 frictionForce = -friction * Vel.normalized;
+
+        // Aplicar la fuerza de fricción al objeto
         Vel += (frictionForce / mass) * Time.deltaTime;
+
+        // Gravedad
         Vel += g * Time.deltaTime;
     }
 
@@ -91,26 +106,10 @@ public class Bolita : MonoBehaviour
         ContactPoint contact = collision.contacts[0];
         Vector3 normal = contact.normal;
 
-        // Calcular la dirección del disparo relativa al punto de origen del disparo
-        Vector3 shootDirection = (transform.position - contact.point).normalized;
-        float angle = Vector3.Angle(-normal, shootDirection);
-
-        // Calcular la nueva dirección de movimiento basada en el ángulo de impacto
-        Vector3 newVelocity = Quaternion.AngleAxis(angle, Vector3.Cross(-normal, shootDirection)) * -normal;
-
-        // Aplicar la nueva velocidad a la bolita
-        Vel = newVelocity.normalized * Vel.magnitude;
-
-
-        // Activar la simulación
-        ApplyImpact();
+        // Activar la simulación con una fuerza basada en la normal de la colisión
+        ApplyImpact(normal * 1f); // Reemplaza someForceMagnitude con la magnitud de la fuerza que deseas aplicar
     }
 
-    void ApplyImpact()
-    {
-        // Iniciar la simulación
-        isSimulating = true;
-    }
 
     void ApplyImpact(Vector3 impactForce)
     {

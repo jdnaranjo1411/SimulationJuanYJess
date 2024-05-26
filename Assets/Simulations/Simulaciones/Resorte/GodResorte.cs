@@ -1,34 +1,25 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GodResorte : MonoBehaviour
 {
-    private float h;
-    private float friction;
-    private float gravity;
-    private Resorte resorte; // Referencia al resorte
-    private bool isSimulating = false; // Variable para controlar si se está simulando o no
+    private float h = 0.01f;
+    private float friction = 0.2f;
+    private float gravity = 9.8f;
+    public List<Resorte> resortes = new List<Resorte>();
 
-    // Método público para inicializar el GodResorte
-    public void Initialize(float h, float friction, float gravity, Resorte resorte = null)
+    void Start()
     {
-        this.h = h;
-        this.friction = friction;
-        this.gravity = gravity;
-        this.resorte = resorte; // Asignar el resorte proporcionado (o null si no se proporciona)
+        Resorte[] resortesEnEscena = FindObjectsOfType<Resorte>();
+        resortes.AddRange(resortesEnEscena);
     }
 
-    // Método para simular el movimiento del resorte
-    public void Simulate()
+    void Update()
     {
-        // Verificar si se está simulando el movimiento del resorte
-        if (!isSimulating) return;
-
-        // Simular el movimiento del resorte
-        if (resorte != null)
+        foreach (Resorte resorte in resortes)
         {
-            resorte.Simulate(h, friction, gravity); // Llamar al método Simulate del resorte
+            resorte.Simulate(h, friction, gravity);
         }
     }
 }
+

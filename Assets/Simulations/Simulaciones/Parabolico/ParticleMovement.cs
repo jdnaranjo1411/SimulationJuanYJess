@@ -83,9 +83,10 @@ public class ParticleMovement : MonoBehaviour
     public void DetectCollision()
     {
         collision = false;
-        if (Pos.y <= 0.005)
+        if (Pos.y <= 0.05)
         {
             collision = true;
+            Pos.y = 0.05f;
         }
     }
 
@@ -114,7 +115,7 @@ public class ParticleMovement : MonoBehaviour
 
     private void Simulate(float h)
     {
-        CalculateForce(Physics.gravity.y, 0); // Puedes ajustar la fricción si es necesario
+        CalculateForce(Physics.gravity.y, 0.2f); // Puedes ajustar la fricción si es necesario
         Vector3 acceleration = Force / mass;
         Vel += h * acceleration;
         Pos += h * Vel;

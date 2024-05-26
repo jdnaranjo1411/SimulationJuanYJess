@@ -4,21 +4,19 @@ using UnityEngine;
 
 public class GodCabello : MonoBehaviour
 {
-    private float h;
-    private float friction;
-    private float gravity;
+
+    private float h = 0.01f;
+    private float friction =  0.2f;
+    private float gravity = -9.8f;
     public List<Resorte> resortes = new List<Resorte>();
 
-    public void Initialize(float h, float friction, float gravity)
+    void Start()
     {
-        this.h = h;
-        this.friction = friction;
-        this.gravity = gravity;
         Resorte[] resortesEnEscena = FindObjectsOfType<Resorte>();
         resortes.AddRange(resortesEnEscena);
     }
 
-    public void Simulate()
+    void Update()
     {
         foreach (Resorte resorte in resortes)
         {

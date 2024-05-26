@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class GodChoque : MonoBehaviour
 {
-    private float h;
-    private float friction;
-    private float gravity;
+    private float h = 0.01f;
+    private float friction = 5f;
+    private float gravity = -9.8f;
     public GameObject[] GobjChoque;
 
     public void Initialize(float h, float friction, float gravity)
