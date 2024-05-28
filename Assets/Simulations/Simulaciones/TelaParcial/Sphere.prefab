@@ -97,5 +97,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Position: {x: 0, y: 0, z: 0}
-  Velociity: {x: 0, y: 0, z: 0}
-  Radius: 3
+  Velocity: {x: 0, y: 0, z: 0}
+  Radius: 0.5
+  InitialScale: 0.5

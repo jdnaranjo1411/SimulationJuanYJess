@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Cloth : MonoBehaviour
@@ -12,7 +14,7 @@ public class Cloth : MonoBehaviour
     [SerializeField] private GameObject hitbox;
     [SerializeField] private GameObject nodePrefab;
     [SerializeField] private GameObject caja;
-    [SerializeField] private Vector3 startPosition = Vector3.zero; // Nueva variable para la posición de inicio
+    [SerializeField] private float nodeScale = 1f; // Tamaño de los nodos
 
     private Vector3 highBoxBounds;
     private Vector3 lowBoxBounds;
@@ -47,6 +49,9 @@ public class Cloth : MonoBehaviour
         nodes = new GameObject[rows, columns];
         velocities = new Vector3[rows, columns];
 
+        // Obtener la posición inicial a partir de la posición del objeto que contiene este script
+        Vector3 startPosition = transform.position;
+
         // Crea los nodos de la tela
         for (int i = 0; i < rows; i++)
         {
@@ -54,6 +59,7 @@ public class Cloth : MonoBehaviour
             {
                 GameObject node = Instantiate(nodePrefab);
                 node.transform.position = startPosition + new Vector3(i * spacing, 5, j * spacing);
+                node.transform.localScale = Vector3.one * nodeScale; // Ajustar la escala del nodo
                 nodes[i, j] = node;
                 velocities[i, j] = Vector3.zero;
                 node.GetComponent<Renderer>().material.color = Color.blue;
@@ -225,10 +231,3 @@ public class Cloth : MonoBehaviour
         return force;
     }
 }
-
-
-
-
-
-
-

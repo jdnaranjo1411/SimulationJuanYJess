@@ -9,6 +9,8 @@ TagManager:
   - Choque
   - Resorte
   - Iman
+  - Ground
+  - DeformadorTela
   layers:
   - Default
   - TransparentFX
